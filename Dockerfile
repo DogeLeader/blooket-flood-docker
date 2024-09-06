@@ -13,6 +13,20 @@ RUN apt-get update && apt-get install -y \
     libuv1-dev \
     libjson-c-dev \
     libwebsockets-dev \
+    sudo \
+    curl \
+    wget \ 
+    net-tools  \
+    vim \
+    openssh-client \
+    locales \
+    bash-completion \
+    iputils-ping \
+    htop \
+    gnupg2 \
+    tmux \
+    screen \
+    zsh # buildkit \
     && apt-get clean
 RUN /bin/sh -c wget https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64 && chmod +x ttyd.x86_64 && mv ttyd.x86_64 /usr/local/bin/ttyd # buildkit
 
