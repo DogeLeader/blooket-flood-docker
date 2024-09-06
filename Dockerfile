@@ -34,8 +34,11 @@ RUN apt-get update && apt-get install -y \
 # Symlink nodejs to node (in case the system installs as nodejs)
 RUN ln -s /usr/bin/nodejs /usr/bin/node || true
 
-# Download and install ttyd from source for better compatibility
-RUN git clone https://github.com/tsl0922/ttyd.git /ttyd-src && \
+# Set environment variable for terminal type
+ENV TERM=xterm-256color
+
+# Download and install ttyd from a specific version for compatibility
+RUN git clone --branch 1.6.3 https://github.com/tsl0922/ttyd.git /ttyd-src && \
     cd /ttyd-src && \
     mkdir build && \
     cd build && \
@@ -46,17 +49,14 @@ RUN git clone https://github.com/tsl0922/ttyd.git /ttyd-src && \
 # Clone the BlooketFlooder repository
 RUN git clone https://github.com/VillainsRule/BlooketFlooder.git /BlooketFlood
 
-# Set working directory to BlooketFlood
+# Set working directory to BlooketFlooder
 WORKDIR /BlooketFlood
 
 # Install BlooketFlooder dependencies
 RUN npm install && npm i chalk
 
-# Ensure ttyd works with a login shell and interactive mode
-RUN echo "export TERM=xterm-256color" >> ~/.bashrc
-
 # Expose the port for ttyd
-EXPOSE 10000
+EXPOSE 7681
 
 # Run BlooketFlooder with ttyd on startup
-CMD ["bash", "-c", "ttyd -p 10000 bash -c 'node .'"]
+CMD ["bash", "-c", "ttyd -p 7681 bash -c 'node .'"]
