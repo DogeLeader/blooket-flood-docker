@@ -37,7 +37,7 @@ RUN git clone https://github.com/VillainsRule/BlooketFlooder.git /BlookFlood
 WORKDIR /BlookFlood
 
 # Install BlooketFlooder dependencies
-RUN npm install
+RUN npm install && npm i chalk
 
 # Expose the port for ttyd
 EXPOSE 7681
