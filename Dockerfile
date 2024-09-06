@@ -56,7 +56,7 @@ WORKDIR /BlooketFlood
 RUN npm install && npm i chalk
 
 # Expose the port for ttyd
-EXPOSE 7681
+EXPOSE 10000
 
 # Run BlooketFlooder with ttyd on startup
-CMD ["bash", "-c", "ttyd -p 7681 bash -c 'node .'"]
+CMD ["bash", "-c", "ttyd -p 10000 bash -c 'node .'"]
