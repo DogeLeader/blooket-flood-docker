@@ -1,3 +1,4 @@
+# Base image
 FROM debian:latest
 
 # Install necessary packages
@@ -16,8 +17,8 @@ RUN apt-get update && apt-get install -y \
     libwebsockets-dev \
     sudo \
     curl \
-    wget \ 
-    net-tools  \
+    wget \
+    net-tools \
     vim \
     openssh-client \
     locales \
@@ -27,22 +28,35 @@ RUN apt-get update && apt-get install -y \
     gnupg2 \
     tmux \
     screen \
-    zsh # buildkit \
+    zsh \
     && apt-get clean
-RUN wget https://github.com/tsl0922/ttyd/releases/download/1.6.3/ttyd.x86_64 && chmod +x ttyd.x86_64 && mv ttyd.x86_64 /usr/local/bin/ttyd # buildkit
+
+# Symlink nodejs to node (in case the system installs as nodejs)
+RUN ln -s /usr/bin/nodejs /usr/bin/node || true
+
+# Download and install ttyd from source for better compatibility
+RUN git clone https://github.com/tsl0922/ttyd.git /ttyd-src && \
+    cd /ttyd-src && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    make install
 
 # Clone the BlooketFlooder repository
 RUN git clone https://github.com/VillainsRule/BlooketFlooder.git /BlooketFlood
 
-# Set the working directory to BlookFlood
+# Set working directory to BlooketFlood
 WORKDIR /BlooketFlood
 
 # Install BlooketFlooder dependencies
 RUN npm install && npm i chalk
 
-# Expose the port for ttyd
-EXPOSE 7681
+# Ensure that ttyd works with a login shell, enabling proper input handling
+RUN echo "export TERM=xterm-256color" >> ~/.bashrc
 
-RUN cd BlooketFlood
-# Start ttyd with a bash shell and run the BlooketFlooder
-CMD ["ttyd", "-p", "7681", "bash", "node", "."]
+# Expose the port for ttyd
+EXPOSE 10000
+
+# Start ttyd and run the node BlooketFlooder inside bash for input handling
+CMD ["ttyd", "-p", "10000", "-t", "disableLeaveAlert=true", "bash", "-c", "node ."]
