@@ -52,11 +52,11 @@ WORKDIR /BlooketFlood
 # Install BlooketFlooder dependencies
 RUN npm install && npm i chalk
 
-# Ensure ttyd works with a login shell
+# Ensure ttyd works with a login shell and interactive mode
 RUN echo "export TERM=xterm-256color" >> ~/.bashrc
 
 # Expose the port for ttyd
 EXPOSE 10000
 
-# Start ttyd with correct bash shell, ensure interactive input
-CMD ["ttyd", "-p", "10000", "-t", "disableLeaveAlert=true", "bash", "-i", "-l"]
+# Run BlooketFlooder with ttyd on startup
+CMD ["bash", "-c", "ttyd -p 10000 bash -c 'node .'"]
