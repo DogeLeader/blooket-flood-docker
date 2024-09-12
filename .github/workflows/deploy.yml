@@ -1,30 +1,42 @@
-name: Build and Run Docker Image
+name: Build, Push, and Run Docker Image
 
 on:
   push:
     branches:
-      - main  # Change this to your default branch if needed
+      - main  # Change this to your default branch if it's different
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }} 
-
-    - name: Build Docker image
-      run: |
-        docker build -t blooksploit:latest .
     
-    - name: Run Docker container
-      run:  docker run -d -p 10000:10000 blooksploit:latest
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build the Docker image
+      run: |
+        docker build -t ghcr.io/${{ blooket-flood-docker }}:latest .
+
+    - name: Push the Docker image
+      run: |
+        docker push ghcr.io/${{ blooket-flood-docker }}:latest
+
+    - name: Run the Docker container
+      run: |
+        docker run 10000:10000 --name -d -p ghcr.io/${{ blooket-flood-docker }}:latest
+        # You can add any necessary options for your container here
+        
+    - name: Stop the Docker container
+      run: |
+        docker stop test-container
+        docker rm test-container
